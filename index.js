@@ -95,34 +95,25 @@ client.connect(err => {
         const name = req.body.name;
         const company = req.body.company;
         const description = req.body.description;
-
-        const filePath = `${__dirname}/reviews/${file.name}`;
-        file.mv(filePath, err => {
-            if (err) {
-
-                return res.status(500).send('Image Upload Failed!')
-            }
-            const newImg = fs.readFileSync(filePath);
-            const encImg = newImg.toString('base64');
+        const newImg = file.data;
+        const encImg = newImg.toString('base64');
+          
             const image = {
-                contentType: req.files.file.mimetype,
-                size: req.files.file.size,
+                contentType: file.mimetype,
+                size: file.size,
                 img: Buffer.from(encImg, 'base64')
             };
 
             reviewCollection.insertOne({ name, description, company, image })
                 .then(result => {
-                    fs.remove(filePath, errors => {
-                        if (errors) {
-                            return res.status(500).send('Image Upload Failed!')
-                        }
+                   
+                        
                         res.send(result.insertedCount > 0);
-                    })
+                    
 
                 })
         })
-
-    })
+ 
 
     //post a admin.
 
